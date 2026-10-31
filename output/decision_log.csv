@@ -1,0 +1,10 @@
+table,issue,decision,reason
+patients,exact duplicate rows,Drop exact duplicates and keep the first copy.,"The repeated registry rows are identical re-exports, so keeping one preserves one patient record without losing information."
+patients,gender spellings that are not a code,"Strip/lowercase values and map known spellings to F, M, or X; leave empty/unknown as missing.","The raw registry contains equivalent spellings such as woman, female, male, and nonbinary that represent the coded categories."
+patients,site codes needing normalization,Uppercase site codes and remove spaces and hyphens.,"Values such as n-01 and N 01 identify the same clinic as N01, so formatting differences should not create new sites."
+patients,birth_year sentinel 9999,Replace 9999 with missing and store birth_year as nullable Int64.,"9999 means not recorded rather than a real birth year, so treating it as missing prevents invalid age information."
+visits,weight column named wt_kg in visits_south.csv,Rename wt_kg to weight_kg before concatenating the visit exports.,"North and south record the same measurement under different headers, and a common name prevents an all-missing split column after stacking."
+visits,sbp sentinel 999 and readings outside 70 through 250,Convert SBP to numeric and replace 999 or any value outside the inclusive 70–250 range with missing.,These values are invalid/not-measured readings; keeping 70 and 250 respects the assignment's inclusive boundary rule.
+visits,impossible and loosely written visit dates,Accept only exact YYYY-MM-DD text that parses to a real calendar date; otherwise set the date missing.,This rejects impossible dates and loosely formatted slash or non-zero-padded dates while preserving valid ISO dates.
+visits,repeated patient_id and visit pairs,Sort recheck pairs by visit_time and keep the later reading.,"The duplicate patient/visit keys are later rechecks, and the assignment specifies retaining the later measurement."
+sites,repeated site_code rows,Keep only rows whose record_status is current.,"Repeated site codes represent current and retired site-name versions, so the current row provides one directory record per site."
